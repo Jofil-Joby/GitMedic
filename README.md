@@ -1,50 +1,133 @@
 # GitMedic
 
-> Portable agent for reviewing basic Git repository hygiene through observable repository metadata.
+> A portable engineering agent for **Git repository hygiene**.
 
-## What it does
+GitMedic inspects observable project evidence, detects **missing ignore rules**, and produces an explainable improvement plan. Its purpose is not to replace specialist tooling. It provides a focused, auditable diagnostic layer that can travel across agent runtimes.
 
-GitMedic checks whether a repository exposes a `.gitignore` and uses that evidence to identify a basic hygiene gap. The scope is intentionally small and deterministic.
+## What makes it different
 
-### Diagnostic fingerprint
-
-**Repository metadata → hygiene signal → evidence → action**
-
-## Why this agent is distinct
-
-GitMedic is not a Git tutor and not a full repository governance platform. It focuses on the small set of repository-level signals that can be evaluated without guessing about team practices.
-
-That makes it a useful building block for larger developer-workflow agents.
-
-## Workflow
+This project follows an **evidence → decision → explanation** model:
 
 ```text
-Git repository
-    ↓
-Metadata scanner
-    ↓
-Hygiene rule
-    ↓
-Evidence
-    ↓
-Improvement plan
+Project
+  ↓
+Scanner
+  ↓
+Domain Evidence
+  ↓
+Deterministic Diagnostic Rule
+  ↓
+Finding + Evidence + Confidence
+  ↓
+Improvement Plan
 ```
+
+The agent does not invent evidence. A finding is tied to what the scanner can actually observe.
+
+## Diagnostic contract
+
+| Layer | GitMedic behavior |
+| --- | --- |
+| Domain | Git repository hygiene |
+| Primary signal | .gitignore and repository files |
+| Remediation | Add appropriate Git ignore rules |
+| Output | Structured, explainable findings |
+| Uncertainty | Explicitly constrained by available evidence |
+
+## Portable architecture
+
+```text
+                    ┌─────────────────────┐
+                    │   Portable Agent    │
+                    │ identity + behavior  │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              ↓                ↓                ↓
+          Diagnostic        Duties &         Explainability
+            Logic           Workflow           Contract
+              │
+              ↓
+        Runtime Adapters
+       ┌──────┬──────┬──────┬──────┐
+       ↓      ↓      ↓      ↓
+    OpenAI  CrewAI  Claude  Lyzr
+```
+
+The core diagnostic logic is kept separate from framework-specific adapters. This is the central design idea of the project, not four copies of the same agent wearing different hats.
+
+## Repository structure
+
+```text
+agent.yaml          # Portable identity and passport metadata
+SOUL.md             # Identity, principles, and behavior
+AGENTS.md           # Agent responsibilities
+DUTIES.md           # Maker / Checker workflow
+EXPLAINABILITY.md   # Decision, inputs, limits, and evidence contract
+core/               # Shared result model
+tools/              # Scanner and domain diagnostics
+skills/             # Declared capabilities
+workflows/          # Agent workflows
+adapters/           # Runtime-facing adapters
+tests/              # Deliberately diagnostic project fixtures
+```
+
+## Passport portability
+
+The agent is structured for the OpenGAP passport model and can be exported to:
+
+- OpenAI Agents SDK
+- CrewAI
+- Claude Code
+- Lyzr
+
+The important part is the **portable contract**: identity, behavior, duties, explainability, tools, and skills remain defined independently of a single runtime.
 
 ## Verification
 
-The repository contains:
-- OpenGAP-compatible identity metadata
-- Git-focused fixture coverage
-- explainability and duty contracts
-- four framework adapters
-- automated adapter verification
+The repository includes:
 
-OpenGAP validation passed and the four generated exports were exercised successfully.
+- Local adapter verification
+- A domain-specific broken-project fixture
+- OpenGAP-compatible passport metadata
+- Explainability requirements
+- Export verification across the supported targets
 
-## Design principle
+The engineering workflow is:
 
-**Repository hygiene should be inspectable.** GitMedic bases recommendations on visible repository structure rather than assumptions about how contributors work.
+```text
+Validate passport
+    → Verify adapters
+    → Run diagnostic fixture
+    → Export with OpenGAP
+    → Inspect generated artifacts
+```
 
-## Medic family
+## Scope and limitations
 
-GitMedic shares the same portable passport model as the other Medic agents, but its diagnostic fingerprint is specifically about version-control hygiene.
+GitMedic is a focused diagnostic prototype. Its conclusions are limited to the evidence and rules implemented in this repository. It should complement, not replace, production-grade static analysis, security scanners, observability platforms, CI systems, or human review where appropriate.
+
+## Why this project exists
+
+This repository is one member of a deliberately modular **Medic agent family**. Each agent applies the same portable passport architecture to a different engineering failure surface.
+
+That makes the collection useful as an interoperability experiment:
+
+```text
+One passport architecture
+        +
+Different diagnostic domains
+        +
+Multiple agent runtimes
+        =
+Portable engineering-agent family
+```
+
+## Challenge context
+
+Built for the **HiDevs × Lyzr Agent Passport Challenge**, exploring portable agent identity, behavior contracts, explainability, verification, and framework interoperability.
+
+## Author
+
+**Jofil Joby**  
+[GitHub](https://github.com/Jofil-Joby)
