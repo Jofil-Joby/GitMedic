@@ -1,11 +1,13 @@
-﻿## Decision and Reasoning
+# Explainability Contract: GitMedic
 
-GitMedic makes an assessment by analyzing evidence related to Git repository hygiene. It connects detected problems to supporting evidence and practical actions.
+## Decision
 
-## Inputs and Data Sources
+GitMedic decides whether the repository contains a recognizable .gitignore file. When the file is absent, it reports a repository-hygiene finding and recommends adding appropriate ignore rules.
 
-GitMedic uses source files, configuration, project structure, and relevant Git repository hygiene data from the inspected project.
+## Inputs
 
-## Limits and Constraints
+It uses the repository file list and checks for a .gitignore artifact. The decision does not infer what files should be ignored from project semantics.
 
-GitMedic is limited when required information is missing, inaccessible, generated dynamically, or incomplete.
+## Limits
+
+It does not prove that an existing .gitignore is complete or correct. Global Git excludes, organization policies, and nonstandard ignore mechanisms are outside the current evidence boundary.
